@@ -1,0 +1,19 @@
+<project name="jsinterop-externs-generator" default="jar" basedir=".">
+
+	<target name="compile">
+		<delete dir="dist/bin" quiet="true"/>
+		<mkdir dir="dist/bin"/>
+		<javac srcdir="src/main/java" destdir="dist/bin" source="1.8" target="1.8" classpathref="compile.classpath" debug="true" debuglevel="lines,source"/>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<jar destfile="dist/${ant.project.name}.jar" basedir="dist/bin">
+			<metainf dir="src/main/resources/META-INF" />
+		</jar>
+		<delete dir="dist/bin" quiet="true" />
+	</target>
+	
+	<path id="compile.classpath">
+	</path>
+
+</project>
