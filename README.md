@@ -7,7 +7,7 @@ necessary for closure to compile these classes after j2cl has converted them to 
 This project has many limitations currently, including the fact that it will only generate
 definitions for getter methods.
 
-##Example Output
+## Example Output
 Given a jsinterop annotated class like:
 
 	import jsinterop.annotations.JsOverlay;
@@ -46,7 +46,7 @@ This will generate the file AuthRequest-externs.js with the content:
 	/** @const {string} */
 	AuthRequest.prototype.password;
 
-##Usage
+## Usage
 This library can be used from most build tools (maven, ant, etc) automatically just by adding it to the compiler's classpath.
 
  
