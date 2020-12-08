@@ -41,6 +41,10 @@ public class ExternsProcessor extends AbstractProcessor {
 	    		return "isNative".equals(e.getSimpleName().toString());
 	    	}).findFirst().get();
 	    	
+	    	Element nameParam = annotation.getEnclosedElements().stream().filter(e -> {
+	    		return "name".equals(e.getSimpleName().toString());
+	    	}).findFirst().get();
+	    	
 	        Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
 	        for (Element element : annotatedElements) {
 	        	Optional<? extends AnnotationMirror> nativeJsTypeAnnotation = 
@@ -58,7 +62,7 @@ public class ExternsProcessor extends AbstractProcessor {
 						name = lowerFirstLetter(name.replaceFirst("^get([A-Z])", "$1"));
 						
 						ExecutableType t = (ExecutableType)el.asType();
-						String returnType = getClosureType(t, nativeParam);
+						String returnType = getClosureType(t, nativeParam, nameParam);
 						
 						return new String[] { name, returnType };
 					}).collect(Collectors.toList());
@@ -126,8 +130,9 @@ public class ExternsProcessor extends AbstractProcessor {
 	 * Converts a java type name to an equivalent Closure/JS type name
 	 * @param t the java type representation to convert
 	 * @param nativeParam the JsType.isNative parameter representation
+	 * @param nameParam the JsType.name parameter representation
 	 */
-	static String getClosureType(ExecutableType t, Element nativeParam) {
+	static String getClosureType(ExecutableType t, Element nativeParam, Element nameParam) {
 		String javaType;
 		if (t.getReturnType() instanceof PrimitiveType) {
 			PrimitiveType pt = (PrimitiveType)t.getReturnType();
@@ -140,6 +145,9 @@ public class ExternsProcessor extends AbstractProcessor {
         	Optional<? extends AnnotationMirror> nativeAnnotation = 
         			findNativeJsTypeAnnotation(nativeParam, te);
         	if (nativeAnnotation.isPresent()) {
+        		if (nativeAnnotation.get().getElementValues().get(nameParam) != null) {
+        			return nativeAnnotation.get().getElementValues().get(nameParam).getValue().toString();
+        		}
         		return te.getSimpleName().toString(); // skip conversion to closure type for native JsTypes
         	}
         	javaType = te.getQualifiedName().toString();
